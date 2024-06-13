@@ -1,0 +1,4 @@
+[console_scripts]
+fastapi-mvc=fastapi_mvc.cli.cli:cli
+fm=fastapi_mvc.cli.cli:cli
+
