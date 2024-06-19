@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0 resize=false ">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Device Status Monitor</title>
 </head>
 <body>
@@ -11,22 +11,25 @@
 <button id="toggle">Toggle</button>
 
 <script>
-    let ws = new WebSocket(`ws://192.168.1.226:8000/ws`);
+    let ws = new WebSocket('wss://websocket123.onrender.com/ws');
     ws.onmessage = function (event) {
-        console.log(event.data)
+        console.log(event.data);
         const statusElement = document.getElementById('status');
-        if (event.data.status === true) {
-            statusElement.textContent = 'Status: ON';
-        } else{
-            statusElement.textContent = 'Status: OFF';
+        try {
+            const data = JSON.parse(event.data);
+            if (data.status === true) {
+                statusElement.textContent = 'Status: ON';
+            } else {
+                statusElement.textContent = 'Status: OFF';
+            }
+        } catch (e) {
+            console.error('Error parsing WebSocket message:', e);
         }
     };
 
-
     document.getElementById('toggle').addEventListener('click', function () {
-        ws.send("toggle")
+        ws.send('toggle');
     });
-
 </script>
 </body>
 </html>

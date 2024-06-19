@@ -3,16 +3,16 @@ import sys
 
 from fastapi.middleware.cors import CORSMiddleware
 
-sys.path.append('../')
+# sys.path.append('../')
 
-from app.auth.base_config import auth_backend, fastapi_users
-from app.auth.schemas import UserRead, UserCreate
-from app.api.endpoints.websocket.router import router as ws_router
+# from auth.base_config import auth_backend, fastapi_users
+# from auth.schemas import UserRead, UserCreate
+from api.endpoints.websocket.router import router as ws_router
 
 app = FastAPI(
     title='Sample API',
 )
-
+#
 # app.include_router(
 #     fastapi_users.get_auth_router(auth_backend),
 #     prefix="/auth",

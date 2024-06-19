@@ -16,9 +16,7 @@ class ConnectionManager:
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
-        await websocket.send_json({
-            "status": self.status
-        })
+        # await websocket.send_json(websocket.)
         print("Connected")
         self.active_connections.append(websocket)
 
@@ -29,21 +27,9 @@ class ConnectionManager:
         await websocket.send_text(message)
 
     async def broadcast(self, message: str):
-        count: int = 0
+        # print(type(message))
         for connection in self.active_connections:
-            if count == 0:
-                print(message)
-                if message == 'toggle':
-                    if self.status:
-                        self.status = False
-                    else:
-                        self.status = True
-                    print(self.status)
-
-                count+=1
-            await connection.send_json({
-                "status": self.status
-            })
+            await connection.send_text(message)
 
 
 manager = ConnectionManager()
