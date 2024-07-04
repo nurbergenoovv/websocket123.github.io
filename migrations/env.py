@@ -8,8 +8,8 @@ from alembic import context
 
 sys.path.append('../')
 from app.core.config import DB_HOST, DB_DATEBASE, DB_PASSWORD, DB_USERNAME, DB_PORT
-from app.models.models import metadata
-from app.auth.models import metadata as auth_metadata
+# from app.models.models import metadata as md
+from app.db.base import Base, metadata
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -30,8 +30,8 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-target_metadata = [metadata, auth_metadata]
+target_metadata = Base.metadata
+# target_metadata = [metadata,
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -70,8 +70,11 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    engine = engine_from_config(config.get_section(config.config_ini_section), prefix='sqlalchemy.')
+
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
+        # target_metadata = target_metadata,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
