@@ -1,3 +1,4 @@
+import json
 import sys
 
 from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, func
@@ -13,3 +14,14 @@ class Ticket(Base):
     status = Column(String(255), nullable=False)
     receptionist_id = Column(Integer, ForeignKey(Receptionist.id), nullable=False)  # Adjust ForeignKey as per Receptionist model
     date_time = Column(TIMESTAMP, nullable=False, server_default=func.now())
+
+    def to_json(self):
+        ticket = {
+            "id": self.id,
+            "email": self.email,
+            "status": self.status,
+            "receptionist_id": self.receptionist_id,
+            "date_time": self.date_time,
+        }
+        return json.dumps(ticket)
+

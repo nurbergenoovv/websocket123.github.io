@@ -16,3 +16,12 @@ class ReceptionistCreate(BaseModel):
     email: str
     photo: str
     table_num: int
+
+class ReceptionistInformation(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    table_num: int
+    photo: str
+    average_rate: float
+    queue: int

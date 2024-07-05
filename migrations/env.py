@@ -9,6 +9,9 @@ from alembic import context
 sys.path.append('../')
 from app.core.config import DB_HOST, DB_DATEBASE, DB_PASSWORD, DB_USERNAME, DB_PORT
 # from app.models.models import metadata as md
+from app.api.endpoints.receptionist.models import Receptionist
+from app.api.endpoints.ticket.models import Ticket
+from app.api.endpoints.rate.models import Rate
 from app.db.base import Base, metadata
 
 # this is the Alembic Config object, which provides

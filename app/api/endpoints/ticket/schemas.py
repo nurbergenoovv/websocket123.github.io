@@ -11,6 +11,19 @@ class TicketRead(BaseModel):
     class Config:
         orm_mode = True
 
+class TicketReadWS(BaseModel):
+    id: int
+    table_num: int
 class TicketCreate(BaseModel):
     email: str
     receptionist_id: int
+
+
+class TicketDeleteRequest(BaseModel):
+    ticket_id: int
+
+class TicketForPage(BaseModel):
+        id: int
+        date_time: str
+        status: str
+        receptionist_id: int
