@@ -1,8 +1,8 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert, delete
+from sqlalchemy import select, insert, delete, func
 
 from app.api.endpoints.rate.schemas import RateRead, RateCreate, RateAverage
 from app.api.endpoints.rate.models import Rate
@@ -22,13 +22,7 @@ async def get_rates_by_receptionist_id(
     stmt = select(Rate).where(Rate.receptionist_id == receptionist_id)
     result = await session.execute(stmt)
     rates = result.scalars().all()
-
     return rates
-
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy.sql import func
 
 @router.get('/{receptionist_id}/average', response_model=RateAverage)
 async def get_average_rate_by_receptionist_id(
@@ -37,17 +31,8 @@ async def get_average_rate_by_receptionist_id(
 ) -> RateAverage:
     stmt = select(func.avg(Rate.rate)).where(Rate.receptionist_id == receptionist_id)
     result = await session.execute(stmt)
-    average_rate = result.scalar()
-
-    if average_rate is None:
-        return {
-            "average_rate": 0,
-            "receptionist_id": receptionist_id
-        }
-
+    average_rate = result.scalar() or 0
     return RateAverage(average_rate=average_rate, receptionist_id=receptionist_id)
-
-
 
 @router.post('/add', response_model=RateRead)
 async def add_rate_to_receptionist(
@@ -60,15 +45,11 @@ async def add_rate_to_receptionist(
     ).returning(Rate.id)
     result = await session.execute(stmt)
     await session.commit()
-    return {
-        "receptionist_id": new_rate.receptionist_id,
-        "rate": new_rate.rate,
-        "id": result.scalar_one(),
-    }
+    rate_id = result.scalar_one()
+    return RateRead(id=rate_id, receptionist_id=new_rate.receptionist_id, rate=new_rate.rate)
 
 @router.delete("/{rate_id}", response_model=ReturnMessage)
 async def delete_rate_from_receptionist(rate_id: int, session: AsyncSession = Depends(get_async_session)) -> ReturnMessage:
-    # Check if the rate exists
     stmt = select(Rate).where(Rate.id == rate_id)
     result = await session.execute(stmt)
     rate = result.scalar_one_or_none()
@@ -76,9 +57,7 @@ async def delete_rate_from_receptionist(rate_id: int, session: AsyncSession = De
     if not rate:
         raise HTTPException(status_code=404, detail="Rate not found")
 
-    # Delete the rate
     stmt = delete(Rate).where(Rate.id == rate_id)
     await session.execute(stmt)
     await session.commit()
-
     return ReturnMessage(message="Rate deleted", status="ok")
