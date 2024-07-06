@@ -24,7 +24,7 @@ def read_root():
 
 
 origins = [
-    "*",
+    "queue-narxoz.vercel.app",
 ]
 
 app.add_middleware(
